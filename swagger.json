@@ -1,0 +1,150 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "YANGre W3Cre API",
+    "contact": {
+      "email": "pilewyll@cisco.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "yangcatalog.org",
+  "basePath": "/yangre/v1",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/yangre": {
+      "post": {
+        "summary": "validates a yang regexp",
+        "description": "By passing in the appropriate options, you can validate a yang regular expression\n",
+        "operationId": "validateYang",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "yangRegex",
+            "description": "Yang regular expression to validate",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RequestParameters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "json response with the results",
+            "schema": {
+              "$ref": "#/definitions/ResponseParametersYang"
+            }
+          }
+        }
+      }
+    },
+    "/w3c": {
+      "post": {
+        "summary": "validates a w3c regexp",
+        "description": "By passing in the appropriate options, you can validate a W3C regular expression\n",
+        "operationId": "validateW3C",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "yangRegex",
+            "description": "W3C regular expression to validate",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RequestParameters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "json response with the results",
+            "schema": {
+              "$ref": "#/definitions/ResponseParametersW3C"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RequestParameters": {
+      "type": "object",
+      "required": [
+        "content",
+        "inverted",
+        "pattern"
+      ],
+      "properties": {
+        "inverted": {
+          "type": "boolean",
+          "example": false,
+          "description": "Set to 1 if the expression match should be inverted"
+        },
+        "pattern": {
+          "type": "string",
+          "example": "[a-z]*"
+        },
+        "pattern_nb": {
+          "type": "integer",
+          "description": "Optional, this will be returned along with the response. This is used for the GUI."
+        },
+        "content": {
+          "type": "string",
+          "example": "aaa",
+          "description": "The content to validate"
+        }
+      }
+    },
+    "ResponseParametersYang": {
+      "type": "object",
+      "properties": {
+        "pattern_nb": {
+          "type": "integer",
+          "description": "Matching the request's pattern_nb"
+        },
+        "yangre_output": {
+          "type": "string",
+          "description": "The output (if any) if the yangre validator"
+        },
+        "yangre_result": {
+          "type": "integer",
+          "description": "0 -> match\n 1 -> no match\n 255 -> error"
+        }
+      }
+    },
+    "ResponseParametersW3C": {
+      "type": "object",
+      "properties": {
+        "pattern_nb": {
+          "type": "integer",
+          "description": "Matching the request's pattern_nb"
+        },
+        "w3cgrep_output": {
+          "type": "string",
+          "description": "The output (if any) if the yangre validator"
+        },
+        "w3cgrep_result": {
+          "type": "integer",
+          "description": "0 -> match\n 1 -> no match\n -1 -> error"
+        }
+      }
+    }
+  }
+}

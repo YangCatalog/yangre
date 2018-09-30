@@ -1,0 +1,165 @@
+<!-- extend base layout -->
+<!-- Author: Pieter Lewyllie, pilewyll@cisco.com -->
+{% extends "base.html" %} {% block content %}
+
+<div class=container>
+    <div class="row">
+        <div id="pattern_inputs" class="col-xs-10">
+            <div class="input-group pattern-input">
+                <span class="input-group-addon" id="basic-addon1">Pattern 1</span>
+                <input class="pattern-textbox form-control" id="pattern-textbox-1" inverted="false" type="text" placeholder="Example: [0-9a-fA-F]*"
+                    aria-describedby="basic-addon1">
+                <div class="input-group-btn">
+                    <button id="invert-pattern-1" type="button" class="btn btn-default">Invert match</button>
+                </div>
+            </div>
+        </div>
+        <div id="pattern_inputs_buttons" class="col-xs-2">
+            <button id="add_pattern_btn" type="button" class="btn btn-default">+</button>
+            <button id="remove_pattern_btn" type="button" class="btn btn-default">-</button>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="comment">Test string:</label>
+                <textarea id="teststring-textbox" class="form-control" rows="5"></textarea>
+            </div>
+        </div>
+    </div>
+    <div id="result_alerts"></div>
+    <div id="data-divs"></div>
+</div>
+
+
+<script>
+    $("#w3c_btn").attr('class', "btn btn-info");
+    var patterncnt = 2;
+    $('#add_pattern_btn').bind('click', function () {
+        // Add pattern field
+        $('#pattern_inputs').append('<div id="pattern-input-' + patterncnt + '" class="input-group pattern-input">'
+            + '<span class="input-group-addon" id="basic-addon' + patterncnt + '">Pattern ' + patterncnt + '</span>'
+            + '<input class="pattern-textbox form-control" id="pattern-textbox-' + patterncnt + '" inverted="false" type="text" placeholder="Example: [0-9a-fA-F]*" aria-describedby="basic-addon' + patterncnt + '">'
+            + '<div class="input-group-btn">'
+            + '   <button id="invert-pattern-' + patterncnt + '" type="button" class="btn btn-default">Invert match</button>'
+            + '</div>'
+            + '</div>');
+
+        patterncnt++;
+        if (patterncnt > 2)
+            $("#remove_pattern_btn").css('display', 'inline');
+    });
+
+    $("#pattern_inputs_buttons").unbind().on('click', '#remove_pattern_btn', function () {
+        // Remove pattern field
+        patterncnt--;
+        $('#pattern-input-' + patterncnt).remove();
+        if (patterncnt == 2)// remove the - btn
+            $("#remove_pattern_btn").css('display', 'none');
+        match_patterns(); // re-run the matching, to display correct results
+    });
+
+    $("#pattern_inputs").unbind().on('click', '.btn', function () {
+        // toggle invert match
+        if ($(this).hasClass('btn-default')) {
+            $(this).addClass('btn-info').removeClass('btn-default');
+            $(this).html('Inverted match');
+
+            // setting the pattern to be inverted
+            var patternid = $(this).attr('id').replace("invert-pattern-", "pattern-textbox-");
+            $('#' + patternid).attr("inverted", "true");
+        } else {
+            $(this).addClass('btn-default').removeClass('btn-info');
+            $(this).html('Invert match');
+
+            // setting the pattern to be inverted
+            var patternid = $(this).attr('id').replace("invert-pattern-", "pattern-textbox-");
+            $('#' + patternid).attr("inverted", "false");
+        }
+        match_patterns();
+
+    });
+
+    $('#teststring-textbox').unbind().on('change keyup paste', function () {
+        match_patterns(); // call match_patterns everytime a key is entered in textbox
+    });
+    $('#pattern_inputs').on('input', function () {
+        match_patterns(); // call match_patterns everytime a key is entered in textbox
+    });
+
+    function match_patterns() {
+        /* generating a random div ID to store information from async AJAX calls */
+        var rand_div = Math.random() * 100000000000000000;
+        $('#data-divs').html('<div id="' + rand_div + '"></div>');
+        //$('#'+rand_div).append("<h3> Results </h3>");
+
+        var number_of_green_patterns = 0; // used to check if all patterns match
+
+        $('.pattern-textbox').each(function () {
+            // for every pattern, will do a REST call to see if it matches test string
+            var current_textbox = $(this);
+            var json_request_data = {
+                "inverted": current_textbox.attr('inverted'),
+                "pattern_nb": current_textbox.attr('id').substr(-1),
+                "pattern": current_textbox.val(),
+                "content": $('#teststring-textbox').val()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/yangre/v1/w3c",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json_request_data),
+                success: function (data) {
+                    var alerts_div = "";
+
+                    // adding outputs in alert zone
+                    if (data.w3cgrep_result == 1)
+                        alerts_div += ('<div class="alert alert-danger" role="alert">'
+                            + '<b>Pattern ' + data.pattern_nb + ' W3CGREP</b> does not match'
+                            + '</div>');
+                    else if (data.w3cgrep_result == 2 || data.w3cgrep_result == -1)
+                        alerts_div += ('<div class="alert alert-warning" role="alert">'
+                            + '<b>Pattern ' + data.pattern_nb + ' W3CGREP</b> encountered an error'
+                            + '<p>' + data.w3cgrep_output + '</p>'
+                            + '</div>');
+
+                    var result = data.w3cgrep_result;
+                    if (result == 0) { // we have a match, green background
+                        $("#pattern-textbox-" + data.pattern_nb).css("background-color", "#dff0d8");
+                        number_of_green_patterns++;
+                    } else { // no match, red
+                        $("#pattern-textbox-" + data.pattern_nb).css("background-color", "#f9f2f4");
+                    }
+
+                    $('#' + rand_div).append(alerts_div);
+                    $('#result_alerts').html($('#' + rand_div).html());
+
+                    if (number_of_green_patterns == data.pattern_nb) {
+                        // all patterns are matching, show the textbox as green
+                        $('#teststring-textbox').css("background-color", "#dff0d8");
+                        $('#result_alerts').html('<div class="alert alert-success" role="alert"><p>All patterns are matching</p></div>');
+                    } else if (number_of_green_patterns == 0) {
+                        $('#teststring-textbox').css("background-color", "#f9f2f4");
+                    } else {
+                        $('#teststring-textbox').css("background-color", "#fcf8e3");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alerts_div = "";
+                    alerts_div += ('<h3>Backend error</h3>');
+                    alerts_div += ('<div class="alert alert-warning" role="alert">'
+                        + '<p><b>Server ERROR</b>: Status = ' + textStatus + ', ' + 'error thrown: ' + errorThrown + '</p>'
+                        + '</div>');
+                    $('#' + rand_div).append(alerts_div);
+                    $('#result_alerts').html($('#' + rand_div).html());
+                },
+            });
+        });
+    }
+
+</script> {% endblock %}
+
+<!--
+
+RED background: #f9f2f4
+GREEN background: #dff0d8
+
+  -->

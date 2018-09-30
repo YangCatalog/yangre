@@ -1,0 +1,15 @@
+.pattern-input {
+    margin-bottom: 10px;
+}
+
+.lead {
+    margin: 10px;
+}
+
+#data-divs {
+    display: none;
+}
+
+#remove_pattern_btn {
+    display: none;
+}
