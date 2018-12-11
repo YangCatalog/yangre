@@ -15,7 +15,7 @@
 import os
 os.environ['LD_LIBRARY_PATH'] = "/usr/local/lib/:/usr/lib/x86_64-linux-gnu"
 
-YANGGRE_PATH = "/usr/local/bin/yangre"
+YANGGRE_PATH = "/usr/bin/yangre"
 W3CGREP_PATH = "/home/yang/w3cgrep/w3cgrep"
 PREFIX = "/yangre"  # changing this will break things, as it is also used in ajax calls
 APIPREFIX = "/yangre/v1"
