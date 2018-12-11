@@ -8,7 +8,13 @@ For context, this was a major issue that Openconfig had. While there were a numb
 
 ## Getting Started
 
-After cloning the project, configure `config.py` with the appropriate paths for the yangre and w3cgrep executables. I had some issues with yangre not finding the right library files, so I included an explicit path to the library. Feel free to remove or customize this as needed.
+## Getting Started
+
+After cloning the project:
+
+- compile and install the w3cgrep utility (it may be required to explicitly install and link with libxml2);
+- configure `config.py` with the appropriate paths for the yangre and w3cgrep executables. I had some issues with yangre not finding the right library files, so I included an explicit path to the library. Feel free to remove or customize this as needed
+.
 
 Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by linking /etc/uwsgi/vassals/yangre.ini to the yangre.ini of this repo).
 
@@ -18,7 +24,7 @@ Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by li
 * Python 3.5
 * Flask
 
-### Nging configuration
+### Nginx configuration
 ```
         location /yangre/static {
                 alias /home/yang/yangre/app/static ;
