@@ -10,7 +10,7 @@ For context, this was a major issue that Openconfig had. While there were a numb
 
 After cloning the project, configure `config.py` with the appropriate paths for the yangre and w3cgrep executables. I had some issues with yangre not finding the right library files, so I included an explicit path to the library. Feel free to remove or customize this as needed.
 
-Best is to start it via the UWSGI.INI file
+Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by linking /etc/uwsgi/vassals/yangre.ini to the yangre.ini of this repo).
 
 ### Prerequisites
 
@@ -18,6 +18,18 @@ Best is to start it via the UWSGI.INI file
 * Python 3.5
 * Flask
 
+### Nging configuration
+```
+        location /yangre/static {
+                alias /home/yang/yangre/app/static ;
+        }
+
+        location /yangre {
+            include uwsgi_params;
+            uwsgi_pass unix:/var/run/yang/yangre.sock ;
+        }
+
+```
 
 ## Resources
 * See [RFC 7950 section 9.4.5](https://tools.ietf.org/html/rfc7950#section-9.4.5) for details on the YANG regular expressions.
