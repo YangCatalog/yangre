@@ -21,7 +21,7 @@ Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by li
 * Python 3.5
 * Flask
 
-### Nging configuration
+### Nginx configuration
 ```
         location /yangre/static {
                 alias /home/yang/yangre/app/static ;
