@@ -26,10 +26,12 @@ uid = yang
 gid = yang
 
 master = true
-processes = 2
+processes = 1
 
 chdir = %(base)
-pythonhome = /usr/local/lib/python3.6
+pythonhome = /usr/lib/python3.4
+plugin=python3
+#pythonhome = /usr/local/lib/python3
 
 callable = app
 
@@ -40,7 +42,6 @@ safe-pidfile = /var/run/yang/%n.pid
 
 callable = app
 
-#http = :5000
 socket = /var/run/yang/yangre.sock
 chmod-socket = 660
 vacuum = true

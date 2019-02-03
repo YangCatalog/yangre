@@ -19,7 +19,30 @@ import config
 import uuid
 from flask import render_template, jsonify, request, send_from_directory
 from app import app
+import sys
 
+def _run(args):
+        # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
+        # in python 3.6 this changes to encoding='utf8'
+    if sys.version_info < (3, 5, 0):
+        try:
+            output = subprocess.check_output(
+                args,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True)
+            result = 0
+        except subprocess.CalledProcessError as e:
+            result = e.returncode
+            output = e.output
+    else:
+        input_obj = subprocess.run(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True)
+        result = input_obj.returncode
+        output = input_obj.stdout
+    return result, output
 
 @app.route(config.PREFIX + '/', methods=['GET', 'POST'])
 @app.route(config.PREFIX + '/index', methods=['GET', 'POST'])
@@ -56,15 +79,8 @@ def w3c():  # JSON API to validate W3C input
         testfile.flush()
         os.fsync(testfile.fileno())
 
-    # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
-    # in python 3.6 this changes to encoding='utf8'
-    w3c_input_obj = subprocess.run(
-        [config.W3CGREP_PATH,
-         str(req_data['pattern']), w3cinput_filename],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        universal_newlines=True)
-    if not w3c_input_obj.stdout:
+    result, output = _run([config.W3CGREP_PATH, str(req_data['pattern']), w3cinput_filename])
+    if not output:
         w3c_input_result = 1
     else:
         w3c_input_result = 0
@@ -72,7 +88,7 @@ def w3c():  # JSON API to validate W3C input
     if req_data['inverted'] == "true":
         w3c_input_result = int(not w3c_input_result)
 
-    if w3c_input_obj.returncode == 1:
+    if result == 1:
         w3c_input_result = -1  # I used -1 as error code
 
     # clean up files
@@ -84,7 +100,7 @@ def w3c():  # JSON API to validate W3C input
     return jsonify({
         'pattern_nb': req_data['pattern_nb'],
         'w3cgrep_result': w3c_input_result,
-        'w3cgrep_output': w3c_input_obj.stdout
+        'w3cgrep_output': output
     })
 
 
@@ -103,30 +119,18 @@ def yangre():  # JSON API to validate YANG input
 
     yangre_input_obj = {}
     if req_data['inverted'] == "true":
-        # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
-        # in python 3.6 this changes to encoding='utf8'
-        yangre_input_obj = subprocess.run(
-            [config.YANGGRE_PATH, "-f", yangreinput_filename, "-i"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True)
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename, "-i"]) 
     else:
-        # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
-        # in python 3.6 this changes to encoding='utf8'
-        yangre_input_obj = subprocess.run(
-            [config.YANGGRE_PATH, "-f", yangreinput_filename],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True)
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename]) 
 
     # clean up files
     try:
         os.remove(yangreinput_filename)
     except FileNotFoundError:
         print("Oops, file not found")
-
+        
     return jsonify({
         'pattern_nb': req_data['pattern_nb'],
-        'yangre_result': yangre_input_obj.returncode,
-        'yangre_output': yangre_input_obj.stdout
+        'yangre_result': yangre_result,
+        'yangre_output': yangre_output
     })
