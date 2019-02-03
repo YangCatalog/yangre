@@ -31,7 +31,6 @@ processes = 1
 chdir = %(base)
 pythonhome = /usr/lib/python3.4
 plugin=python3
-#pythonhome = /usr/local/lib/python3
 
 callable = app
 
@@ -39,8 +38,6 @@ die-on-term = true
 logto = /var/yang/logs/uwsgi/%n.log
 logfile-chmod = 660
 safe-pidfile = /var/run/yang/%n.pid
-
-callable = app
 
 socket = /var/run/yang/yangre.sock
 chmod-socket = 660

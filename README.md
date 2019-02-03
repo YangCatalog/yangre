@@ -11,9 +11,9 @@ For context, this was a major issue that Openconfig had. While there were a numb
 After cloning the project:
 
 - compile and install the w3cgrep utility (it may be required to explicitly install and link with libxml2);
-- configure `config.py` with the appropriate paths for the yangre and w3cgrep executables. I had some issues with yangre not finding the right library files, so I included an explicit path to the library. Feel free to remove or customize this as needed.
+- configure `config.py` based on `config.py-dist` with the appropriate paths for the yangre and w3cgrep executables. I had some issues with yangre not finding the right library files, so I included an explicit path to the library. Feel free to remove or customize this as needed.
 
-Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by linking /etc/uwsgi/vassals/yangre.ini to the yangre.ini-dist of this repo).
+Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by linking `/etc/uwsgi/vassals/yangre.ini` to the `yangre.ini-dist` of this repo).
 
 ### Prerequisites
 
