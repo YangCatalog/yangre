@@ -2,6 +2,7 @@
 
 #!/usr/bin/env python
 
+# Copyright The IETF Trust 2019, All Rights Reserved
 # Copyright (c) 2015-2018 Cisco and/or its affiliates.
 
 # This software is licensed to you under the terms of the Apache License, Version 2.0 (the "License").
