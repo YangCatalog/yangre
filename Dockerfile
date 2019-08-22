@@ -23,21 +23,11 @@ RUN groupadd -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID_GID} -d $VIRTUAL_ENV yang
 
 RUN apt-get update \
-  && apt-get -y install libxml2 
-
-RUN apt-get install -y \
+  && apt-get -y install libxml2 \
     wget \
     gnupg2
 
-RUN echo "deb http://download.opensuse.org/repositories/home:/liberouter/xUbuntu_18.04/ /" > /etc/apt/sources.list.d/libyang.list
-RUN wget -nv https://download.opensuse.org/repositories/home:liberouter/xUbuntu_18.04/Release.key -O Release.key
-RUN apt-key add - < Release.key
-
-RUN apt-get update
-
-RUN apt-get install -y \
-	libyang \
-     && rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN pip install virtualenv \
   && virtualenv --system-site-packages $VIRTUAL_ENV \
