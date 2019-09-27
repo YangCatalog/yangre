@@ -19,7 +19,7 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONUNBUFFERED=1
 
 ENV VIRTUAL_ENV=/yangre
 RUN bash -c 'echo -e  ${YANG_ID_GID}'
-RUN groupadd -r yang \
+RUN groupadd -g ${YANG_ID_GID} -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID_GID} -d $VIRTUAL_ENV yang
 
 RUN apt-get update \
@@ -45,7 +45,7 @@ COPY --from=build /usr/local/bin/yangre /usr/bin/
 COPY --from=build /usr/local/lib/ /usr/local/lib/
 
 # Support arbitrary UIDs as per OpenShift guidelines
-USER ${YANG_ID_GID}:0
+USER ${YANG_ID_GID}:${YANG_ID_GID}
 
 WORKDIR $VIRTUAL_ENV
 
