@@ -1,7 +1,7 @@
 FROM debian:stretch AS build
 
 RUN apt-get update \
-  && apt-get -y install clang cmake libpcre3-dev git libxml2-dev \
+  && apt-get -y install clang cmake libpcre3-dev git libxml2-dev \ 
   && cd /home; mkdir w3cgrep \
   && cd /home; git clone https://github.com/CESNET/libyang.git \
   && cd /home/libyang; mkdir build \
@@ -23,7 +23,7 @@ RUN groupadd -g ${YANG_ID_GID} -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID_GID} -d $VIRTUAL_ENV yang
 
 RUN apt-get update \
-  && apt-get -y install libxml2 \
+  && apt-get -y install libxml2 uwsgi uwsgi-plugin-python3 \
     wget \
     gnupg2
 
@@ -43,11 +43,15 @@ RUN pip install uwsgi flask
 COPY --from=build /usr/local/bin/w3cgrep /home/yang/w3cgrep/
 COPY --from=build /usr/local/bin/yangre /usr/bin/
 COPY --from=build /usr/local/lib/ /usr/local/lib/
+COPY yangre.ini-dist $VIRTUAL_ENV/yangre.ini
+
+RUN mkdir /var/run/yang
+
+RUN chown -R yang:yang /var/run/yang
+RUN chown -R yang:yang $VIRTUAL_ENV
 
 # Support arbitrary UIDs as per OpenShift guidelines
-USER ${YANG_ID_GID}:${YANG_ID_GID}
 
 WORKDIR $VIRTUAL_ENV
 
-CMD exec uwsgi -s :5000 --protocol uwsgi \
-  -w wsgi:application --need-app
+CMD uwsgi --ini yangre.ini
