@@ -54,4 +54,4 @@ RUN chown -R yang:yang $VIRTUAL_ENV
 
 WORKDIR $VIRTUAL_ENV
 
-CMD uwsgi --ini yangre.ini
+CMD chown -R yang:yang /var/run/yang && uwsgi --ini yangre.ini
