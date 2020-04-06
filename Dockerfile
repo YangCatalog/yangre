@@ -12,15 +12,17 @@ RUN cd /home/w3cgrep \
   && clang w3cgrep.c -I/usr/include/libxml2 -lxml2 -o /usr/local/bin/w3cgrep
 
 FROM python:3
-ARG YANG_ID_GID
+ARG YANG_ID
+ARG YANG_GID
 
-ENV YANG_ID_GID "$YANG_ID_GID"
+ENV YANG_ID "$YANG_ID"
+ENV YANG_GID "$YANG_GID"
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONUNBUFFERED=1
 
 ENV VIRTUAL_ENV=/yangre
-RUN bash -c 'echo -e  ${YANG_ID_GID}'
-RUN groupadd -g ${YANG_ID_GID} -r yang \
-  && useradd --no-log-init -r -g yang -u ${YANG_ID_GID} -d $VIRTUAL_ENV yang
+#RUN bash -c 'echo -e  ${YANG_ID}'
+RUN groupadd -g ${YANG_GID} -r yang \
+  && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
 
 RUN apt-get update \
   && apt-get -y install libxml2 uwsgi uwsgi-plugin-python3 \
