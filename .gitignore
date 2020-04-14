@@ -3,3 +3,4 @@ __pycache__/*
 yangre.ini
 config.py
 *~
+/venv/
