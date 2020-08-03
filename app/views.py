@@ -18,7 +18,7 @@ import subprocess
 import os
 import config
 import uuid
-from flask import render_template, jsonify, request, send_from_directory
+from flask import render_template, jsonify, request, send_from_directory, make_response
 from app import app
 import sys
 
@@ -120,18 +120,28 @@ def yangre():  # JSON API to validate YANG input
 
     yangre_input_obj = {}
     if req_data['inverted'] == "true":
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename, "-i"]) 
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename, "-i"])
     else:
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename]) 
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename])
 
     # clean up files
     try:
         os.remove(yangreinput_filename)
     except FileNotFoundError:
         print("Oops, file not found")
-        
+
     return jsonify({
         'pattern_nb': req_data['pattern_nb'],
         'yangre_result': yangre_result,
         'yangre_output': yangre_output
     })
+
+
+@app.route(config.PREFIX + '/ping', methods=['POST'])
+def ping():
+    req_data = request.get_json()
+
+    if req_data['input']['data'] == 'ping':
+        return make_response(jsonify({'info': 'Success'}), 200)
+    else:
+        return make_response(jsonify({'error': 'Bad request body'}), 400)
