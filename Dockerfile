@@ -25,7 +25,7 @@ RUN groupadd -g ${YANG_GID} -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
 
 RUN apt-get update \
-  && apt-get -y install libxml2 uwsgi uwsgi-plugin-python3 \
+  && apt-get -y install libxml2 gunicorn \
     wget \
     gnupg2
 
@@ -40,12 +40,11 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY . $VIRTUAL_ENV
 COPY config.py-dist $VIRTUAL_ENV/config.py
-RUN pip install uwsgi flask
+RUN pip install gunicorn flask
 
 COPY --from=build /usr/local/bin/w3cgrep /home/yang/w3cgrep/
 COPY --from=build /usr/local/bin/yangre /usr/bin/
 COPY --from=build /usr/local/lib/ /usr/local/lib/
-COPY yangre.ini-dist $VIRTUAL_ENV/yangre.ini
 
 RUN mkdir /var/run/yang
 
@@ -56,4 +55,4 @@ RUN chown -R yang:yang $VIRTUAL_ENV
 
 WORKDIR $VIRTUAL_ENV
 
-CMD chown -R yang:yang /var/run/yang && uwsgi --ini yangre.ini
+CMD chown -R yang:yang /var/run/yang && /yangre/bin/gunicorn wsgi:application -c gunicorn.conf.py
