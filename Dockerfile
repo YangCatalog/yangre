@@ -1,7 +1,7 @@
 FROM debian:stretch AS build
 
-RUN apt-get update \
-  && apt-get -y install clang cmake libpcre3-dev git libxml2-dev \ 
+RUN apt-get -y update \
+  && apt-get -y install clang cmake libpcre3-dev git libxml2-dev \
   && cd /home; mkdir w3cgrep \
   && cd /home; git clone https://github.com/CESNET/libyang.git \
   && cd /home/libyang; mkdir build \
@@ -24,7 +24,7 @@ ENV VIRTUAL_ENV=/yangre
 RUN groupadd -g ${YANG_GID} -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
 
-RUN apt-get update \
+RUN apt-get -y update \
   && apt-get -y install libxml2 gunicorn \
     wget \
     gnupg2
