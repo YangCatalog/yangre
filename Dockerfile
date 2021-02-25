@@ -11,7 +11,7 @@ COPY w3cgrep.c /home/w3cgrep/.
 RUN cd /home/w3cgrep \
   && clang w3cgrep.c -I/usr/include/libxml2 -lxml2 -o /usr/local/bin/w3cgrep
 
-FROM python:3
+FROM python:3.8
 ARG YANG_ID
 ARG YANG_GID
 
@@ -25,7 +25,7 @@ RUN groupadd -g ${YANG_GID} -r yang \
   && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
 
 RUN apt-get -y update \
-  && apt-get -y install libxml2 gunicorn \
+  && apt-get -y install libxml2 gunicorn rsyslog systemd \
     wget \
     gnupg2
 
@@ -55,4 +55,4 @@ RUN chown -R yang:yang $VIRTUAL_ENV
 
 WORKDIR $VIRTUAL_ENV
 
-CMD chown -R yang:yang /var/run/yang && /yangre/bin/gunicorn wsgi:application -c gunicorn.conf.py
+CMD chown -R yang:yang /var/run/yang && service rsyslog start && /yangre/bin/gunicorn wsgi:application -c gunicorn.conf.py
