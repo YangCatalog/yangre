@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v3.1.0 - 2021-03-18
+
+ * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v3.0.1 - 2021-02-26
 
  * rsyslog and systemd added to Docker image build [deployment #48](https://github.com/YangCatalog/deployment/issues/48)
