@@ -11,7 +11,7 @@ COPY w3cgrep.c /home/w3cgrep/.
 RUN cd /home/w3cgrep \
   && clang w3cgrep.c -I/usr/include/libxml2 -lxml2 -o /usr/local/bin/w3cgrep
 
-FROM python:3.8
+FROM python:3.9
 ARG YANG_ID
 ARG YANG_GID
 
