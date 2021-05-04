@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v3.2.1 - 2021-05-04
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v3.2.0 - 2021-04-15
 
   * Python base image bumped to version 3.9 [deployment #66](https://github.com/YangCatalog/deployment/issues/66)
