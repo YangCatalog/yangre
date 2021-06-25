@@ -1,4 +1,4 @@
-#Author: Pieter Lewyllie, pilewyll@cisco.com
+# Author: Pieter Lewyllie, pilewyll@cisco.com
 #!/usr/bin/env python
 
 # Copyright The IETF Trust 2019, All Rights Reserved
@@ -14,17 +14,20 @@
 # License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied.
 
-import subprocess
 import os
-import config
-import uuid
-from flask import render_template, jsonify, request, send_from_directory, make_response
-from app import app
+import subprocess
 import sys
+import uuid
+
+import config
+from flask import jsonify, make_response, render_template, request
+
+from app import app
+
 
 def _run(args):
-        # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
-        # in python 3.6 this changes to encoding='utf8'
+    # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
+    # in python 3.6 this changes to encoding='utf8'
     if sys.version_info < (3, 5, 0):
         try:
             output = subprocess.check_output(
@@ -44,23 +47,6 @@ def _run(args):
         result = input_obj.returncode
         output = input_obj.stdout
     return result, output
-
-@app.route(config.PREFIX + '/', methods=['GET', 'POST'])
-@app.route(config.PREFIX + '/index', methods=['GET', 'POST'])
-def index():
-    return render_template(
-        'index.html', title="YANG Regex Expression Validator")
-
-
-@app.route(config.PREFIX + '/about', methods=['GET'])
-def about():
-    return render_template('about.html')
-
-
-@app.route(config.PREFIX + '/w3cgrep', methods=['GET'])
-def w3cgrep():  # loads the w3cgrep validator
-    return render_template(
-        'w3cgrep.html', title="W3C Regex Expression Validator")
 
 
 @app.route(config.PREFIX + '/v1', methods=['GET'])
@@ -98,11 +84,11 @@ def w3c():  # JSON API to validate W3C input
     except FileNotFoundError:
         print("Oops, file not found")
 
-    return jsonify({
+    return make_response(jsonify({
         'pattern_nb': req_data['pattern_nb'],
         'w3cgrep_result': w3c_input_result,
         'w3cgrep_output': output
-    })
+    }), 200)
 
 
 @app.route(config.APIPREFIX + '/yangre', methods=['POST'])
@@ -130,11 +116,11 @@ def yangre():  # JSON API to validate YANG input
     except FileNotFoundError:
         print("Oops, file not found")
 
-    return jsonify({
+    return make_response(jsonify({
         'pattern_nb': req_data['pattern_nb'],
         'yangre_result': yangre_result,
         'yangre_output': yangre_output
-    })
+    }), 200)
 
 
 @app.route(config.PREFIX + '/ping', methods=['POST'])

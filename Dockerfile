@@ -20,9 +20,12 @@ ENV YANG_GID "$YANG_GID"
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONUNBUFFERED=1
 
 ENV VIRTUAL_ENV=/yangre
-#RUN bash -c 'echo -e  ${YANG_ID}'
+
 RUN groupadd -g ${YANG_GID} -r yang \
-  && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
+  && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang \
+  && pip install virtualenv \
+  && virtualenv --system-site-packages $VIRTUAL_ENV \
+  && mkdir -p /etc/yangcatalog
 
 RUN apt-get -y update \
   && apt-get -y install libxml2 gunicorn rsyslog systemd \
@@ -30,10 +33,6 @@ RUN apt-get -y update \
     gnupg2
 
 RUN rm -rf /var/lib/apt/lists/*
-
-RUN pip install virtualenv \
-  && virtualenv --system-site-packages $VIRTUAL_ENV \
-  && mkdir /etc/yangcatalog
 
 ENV PYTHONPATH=$VIRTUAL_ENV/bin/python
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"

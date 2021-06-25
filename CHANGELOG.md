@@ -2,6 +2,11 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v4.0.0 - 2021-06-DD
+
+  * Yangre app adjustments to the new YANG Catalog UI
+  * Updated libyang build requirements
+
 * ##### v3.2.1 - 2021-05-04
 
   * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
