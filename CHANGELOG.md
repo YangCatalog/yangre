@@ -2,6 +2,8 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+  * Swagger API documentation restored [#12](https://github.com/YangCatalog/yangre/issues/12)
+
 * ##### v4.0.0 - 2021-07-09
 
   * Yangre app adjustments to the new YANG Catalog UI [#10](https://github.com/YangCatalog/yangre/issues/10)
