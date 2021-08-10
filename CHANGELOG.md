@@ -2,6 +2,8 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v4.1.0 - 2021-08-10
+
   * Swagger API documentation restored [#12](https://github.com/YangCatalog/yangre/issues/12)
 
 * ##### v4.0.0 - 2021-07-09
