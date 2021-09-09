@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v4.2.0 - 2021-09-09
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v4.1.0 - 2021-08-10
 
   * Swagger API documentation restored [#12](https://github.com/YangCatalog/yangre/issues/12)
