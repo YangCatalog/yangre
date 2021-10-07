@@ -123,11 +123,6 @@ def yangre():  # JSON API to validate YANG input
     }), 200)
 
 
-@app.route(config.PREFIX + '/ping', methods=['POST'])
+@app.route(config.APIPREFIX + '/ping', methods=['GET'])
 def ping():
-    req_data = request.get_json()
-
-    if req_data['input']['data'] == 'ping':
-        return make_response(jsonify({'info': 'Success'}), 200)
-    else:
-        return make_response(jsonify({'error': 'Bad request body'}), 400)
+    return make_response(jsonify({'info': 'Success'}), 200)
