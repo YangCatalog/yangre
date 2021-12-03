@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2021-MM-DD
 
+* ##### v4.3.0 - 2021-12-03
+
+  * yangre/v1/ping API endpoint changed from POST to GET
+
 * ##### v4.2.1 - 2021-10-06
 
   * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)

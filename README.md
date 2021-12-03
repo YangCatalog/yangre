@@ -23,9 +23,9 @@ Best is to start it via the YANGRE.INI file as a UWSGI vassal (for example by li
 
 ### Nginx configuration
 ```
-        location /yangre/v1 {
-            proxy_pass http://unix:/var/run/yang/yangre.sock ;
-        }
+location /yangre/v1 {
+    proxy_pass http://unix:/var/run/yang/yangre.sock ;
+}
 
 ```
 
