@@ -17,9 +17,17 @@
     "https",
     "http"
   ],
+  "tags": [
+    {
+      "name": "Validation requests"
+    }
+  ],
   "paths": {
     "/yangre": {
       "post": {
+        "tags": [
+          "Validation requests"
+        ],
         "summary": "validates a yang regexp",
         "description": "By passing in the appropriate options, you can validate a yang regular expression\n",
         "operationId": "validateYang",
@@ -52,6 +60,9 @@
     },
     "/w3c": {
       "post": {
+        "tags": [
+          "Validation requests"
+        ],
         "summary": "validates a w3c regexp",
         "description": "By passing in the appropriate options, you can validate a W3C regular expression\n",
         "operationId": "validateW3C",
