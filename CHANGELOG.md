@@ -1,6 +1,10 @@
 ## Yangre Release Notes
 
-* ##### vm.m.p - 2021-MM-DD
+* ##### vm.m.p - 2022-MM-DD
+
+* ##### v5.0.0 - 2022-02-02
+
+  * Minor updates to the swagger.json file
 
 * ##### v4.3.0 - 2021-12-03
 
