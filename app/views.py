@@ -25,7 +25,7 @@ from flask import jsonify, make_response, render_template, request
 from app import app
 
 
-def _run(args):
+def _run(args: list):
     # python 3.5 dependency. To get stdout as a string we need the universal_newlines=True parameter
     # in python 3.6 this changes to encoding='utf8'
     if sys.version_info < (3, 5, 0):
@@ -59,10 +59,10 @@ def w3c():  # JSON API to validate W3C input
     req_data = request.get_json()
 
     # writing the test string to file, as required by w3cgrep
-    w3cinput_filename = "/tmp/w3c_input" + str(uuid.uuid4())
-    with open(w3cinput_filename, "w") as testfile:
+    w3cinput_filename = '/tmp/w3c_input' + str(uuid.uuid4())
+    with open(w3cinput_filename, 'w') as testfile:
         testfile.write(req_data['content'])
-        testfile.write("\n")
+        testfile.write('\n')
         testfile.flush()
         os.fsync(testfile.fileno())
 
@@ -72,7 +72,7 @@ def w3c():  # JSON API to validate W3C input
     else:
         w3c_input_result = 0
 
-    if req_data['inverted'] == "true":
+    if req_data['inverted'] == 'true':
         w3c_input_result = int(not w3c_input_result)
 
     if result == 1:
@@ -82,7 +82,7 @@ def w3c():  # JSON API to validate W3C input
     try:
         os.remove(w3cinput_filename)
     except FileNotFoundError:
-        print("Oops, file not found")
+        print('Oops, file not found')
 
     return make_response(jsonify({
         'pattern_nb': req_data['pattern_nb'],
@@ -96,25 +96,24 @@ def yangre():  # JSON API to validate YANG input
     req_data = request.get_json()
 
     # writing the test string to another file for yangre
-    yangreinput_filename = "/tmp/yangre_input" + str(uuid.uuid4())
-    with open(yangreinput_filename, "w") as yangrefile:
+    yangreinput_filename = '/tmp/yangre_input' + str(uuid.uuid4())
+    with open(yangreinput_filename, 'w') as yangrefile:
         yangrefile.write(str(req_data['pattern']))
-        yangrefile.write("\n\n")
+        yangrefile.write('\n\n')
         yangrefile.write(str(req_data['content']))
         yangrefile.flush()
         os.fsync(yangrefile.fileno())
 
-    yangre_input_obj = {}
-    if req_data['inverted'] == "true":
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename, "-i"])
+    if req_data['inverted'] == 'true':
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, '-f', yangreinput_filename, '-i'])
     else:
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, "-f", yangreinput_filename])
+        yangre_result, yangre_output = _run([config.YANGGRE_PATH, '-f', yangreinput_filename])
 
     # clean up files
     try:
         os.remove(yangreinput_filename)
     except FileNotFoundError:
-        print("Oops, file not found")
+        print('Oops, file not found')
 
     return make_response(jsonify({
         'pattern_nb': req_data['pattern_nb'],

@@ -1,52 +1,44 @@
-FROM debian:stretch AS build
-
-RUN apt-get -y update \
-  && apt-get -y install clang cmake libpcre2-dev git libxml2-dev \
-  && cd /home; mkdir w3cgrep \
-  && cd /home; git clone https://github.com/CESNET/libyang.git \
-  && cd /home/libyang; mkdir build \
-  && cd /home/libyang/build && cmake .. && make && make install
-
-COPY w3cgrep.c /home/w3cgrep/.
-RUN cd /home/w3cgrep \
-  && clang w3cgrep.c -I/usr/include/libxml2 -lxml2 -o /usr/local/bin/w3cgrep
-
 FROM python:3.9
 ARG YANG_ID
 ARG YANG_GID
+ARG YANGLINT_VERSION
 
 ENV YANG_ID "$YANG_ID"
 ENV YANG_GID "$YANG_GID"
+ENV YANGLINT_VERSION "$YANGLINT_VERSION"
+
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONUNBUFFERED=1
-
 ENV VIRTUAL_ENV=/yangre
-
-RUN groupadd -g ${YANG_GID} -r yang \
-  && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang \
-  && pip install virtualenv \
-  && virtualenv --system-site-packages $VIRTUAL_ENV \
-  && mkdir -p /etc/yangcatalog
-
-RUN apt-get -y update \
-  && apt-get -y install libxml2 gunicorn rsyslog systemd \
-    wget \
-    gnupg2
-
-RUN rm -rf /var/lib/apt/lists/*
-
 ENV PYTHONPATH=$VIRTUAL_ENV/bin/python
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN groupadd -g ${YANG_GID} -r yang && useradd --no-log-init -r -g yang -u ${YANG_ID} -d $VIRTUAL_ENV yang
+RUN pip install virtualenv && virtualenv --system-site-packages $VIRTUAL_ENV && mkdir -p /etc/yangcatalog
+
+RUN apt-get -y update
+RUN apt-get -y install libxml2 gunicorn rsyslog systemd wget clang cmake libpcre2-dev git
+
+# Install yanglint
+RUN cd /home && git clone -b ${YANGLINT_VERSION} --single-branch --depth 1 https://github.com/CESNET/libyang.git
+RUN cd /home/libyang && mkdir build
+RUN cd /home/libyang/build && cmake .. && make && make install
+
+RUN rm -rf /var/lib/apt/lists/*
+
 COPY . $VIRTUAL_ENV
 COPY config.py-dist $VIRTUAL_ENV/config.py
+RUN pip install --upgrade pip
 RUN pip install gunicorn flask
 
-COPY --from=build /usr/local/bin/w3cgrep /home/yang/w3cgrep/
-COPY --from=build /usr/local/bin/yangre /usr/bin/
-COPY --from=build /usr/local/lib/ /usr/local/lib/
+# Setup w3cgrep
+RUN mkdir -p /home/w3cgrep
+COPY w3cgrep.c /home/w3cgrep/.
+RUN cd /home/w3cgrep && clang w3cgrep.c -I /usr/include/libxml2 -lxml2 -o /usr/local/bin/w3cgrep
+RUN mkdir -p /home/yang/w3cgrep/
+RUN cp /usr/local/bin/w3cgrep /home/yang/w3cgrep/
 
 RUN mkdir /var/run/yang
-
+RUN sed -i "/imklog/s/^/#/" /etc/rsyslog.conf
 RUN chown -R yang:yang /var/run/yang
 RUN chown -R yang:yang $VIRTUAL_ENV
 
