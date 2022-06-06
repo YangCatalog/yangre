@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2022-MM-DD
 
+* ##### v5.3.0 - 2022-06-06
+
+  * Yangre image build updated [#13](https://github.com/YangCatalog/yangre/issues/13)
+
 * ##### v5.2.0 - 2022-05-03
 
   * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
