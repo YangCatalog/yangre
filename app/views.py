@@ -14,15 +14,20 @@
 # License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied.
 
+__author__ = 'Pieter Lewyllie'
+__copyright__ = 'Copyright 2018 Cisco and its affiliates, Copyright The IETF Trust 2019, All Rights Reserved'
+__license__ = 'Apache License, Version 2.0'
+__email__ = 'pilewyll@cisco.com'
+
 import os
 import subprocess
 import sys
 import uuid
 
-import config
-from flask import jsonify, make_response, render_template, request
+import config  # pyright: ignore
+from flask import Blueprint, jsonify, make_response, render_template, request
 
-from app import app
+bp = Blueprint('yangre_v1', __name__, static_folder='static', template_folder='templates')
 
 
 def _run(args: list):
@@ -35,9 +40,9 @@ def _run(args: list):
                 stderr=subprocess.STDOUT,
                 universal_newlines=True)
             result = 0
-        except subprocess.CalledProcessError as e:
-            result = e.returncode
-            output = e.output
+        except subprocess.CalledProcessError as err:
+            result = err.returncode
+            output = err.output
     else:
         input_obj = subprocess.run(
             args,
@@ -49,18 +54,20 @@ def _run(args: list):
     return result, output
 
 
-@app.route(config.PREFIX + '/v1', methods=['GET'])
-def swagger():  # loads the SWAGGER API UI
+@bp.route('', methods=['GET'])
+def swagger():
+    """ Renders the SWAGGER API UI """
     return render_template('swagger.html')
 
 
-@app.route(config.APIPREFIX + '/w3c', methods=['GET', 'POST'])
-def w3c():  # JSON API to validate W3C input
-    req_data = request.get_json()
+@bp.route('/w3c', methods=['GET', 'POST'])
+def w3c():
+    """ JSON API to validate W3C input """
+    req_data = request.get_json()  # pyright: ignore
 
     # writing the test string to file, as required by w3cgrep
     w3cinput_filename = '/tmp/w3c_input' + str(uuid.uuid4())
-    with open(w3cinput_filename, 'w') as testfile:
+    with open(w3cinput_filename, 'w', encoding='utf-8') as testfile:
         testfile.write(req_data['content'])
         testfile.write('\n')
         testfile.flush()
@@ -91,23 +98,24 @@ def w3c():  # JSON API to validate W3C input
     }), 200)
 
 
-@app.route(config.APIPREFIX + '/yangre', methods=['POST'])
-def yangre():  # JSON API to validate YANG input
-    req_data = request.get_json()
+@bp.route('/yangre', methods=['POST'])
+def yangre():
+    """ JSON API to validate YANG input """
+    req_data = request.get_json()  # pyright: ignore
 
     # writing the test string to another file for yangre
     yangreinput_filename = '/tmp/yangre_input' + str(uuid.uuid4())
-    with open(yangreinput_filename, 'w') as yangrefile:
+    with open(yangreinput_filename, 'w', encoding='utf-8') as yangrefile:
         yangrefile.write(str(req_data['pattern']))
         yangrefile.write('\n\n')
         yangrefile.write(str(req_data['content']))
         yangrefile.flush()
         os.fsync(yangrefile.fileno())
 
-    if req_data['inverted'] == 'true':
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, '-f', yangreinput_filename, '-i'])
-    else:
-        yangre_result, yangre_output = _run([config.YANGGRE_PATH, '-f', yangreinput_filename])
+    yangre_command = [config.YANGGRE_PATH, '-f', yangreinput_filename]
+    if req_data.get('inverted') == 'true':
+        yangre_command.append('-i')
+    yangre_result, yangre_output = _run(yangre_command)
 
     # clean up files
     try:
@@ -122,6 +130,6 @@ def yangre():  # JSON API to validate YANG input
     }), 200)
 
 
-@app.route(config.APIPREFIX + '/ping', methods=['GET'])
+@bp.route('/ping', methods=['GET'])
 def ping():
     return make_response(jsonify({'info': 'Success'}), 200)

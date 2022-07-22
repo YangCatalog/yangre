@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#Author: Pieter Lewyllie, pilewyll@cisco.com
+# Author: Pieter Lewyllie, pilewyll@cisco.com
 
 # Copyright The IETF Trust 2019, All Rights Reserved
 # Copyright (c) 2015-2018 Cisco and/or its affiliates.
@@ -15,9 +15,7 @@
 # License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied.
 
-from flask import Flask
-
-app = Flask(__name__)
-app.config.from_object('config')
-
-from app import views
+__author__ = 'Pieter Lewyllie'
+__copyright__ = 'Copyright 2018 Cisco and its affiliates, Copyright The IETF Trust 2019, All Rights Reserved'
+__license__ = 'Apache License, Version 2.0'
+__email__ = 'pilewyll@cisco.com'
