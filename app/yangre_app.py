@@ -1,5 +1,4 @@
-# Copyright The IETF Trust 2019, All Rights Reserved
-# Copyright 2018 Cisco and its affiliates
+# Copyright The IETF Trust 2022, All Rights Reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__author__ = 'Pieter Lewyllie'
-__copyright__ = 'Copyright 2018 Cisco and its affiliates, Copyright The IETF Trust 2019, All Rights Reserved'
+__author__ = 'Slavomir Mazur'
+__copyright__ = 'Copyright The IETF Trust 2022, All Rights Reserved'
 __license__ = 'Apache License, Version 2.0'
-__email__ = 'pilewyll@cisco.com'
+__email__ = 'slavomir.mazur@pantheon.tech'
 
+from app.my_flask import MyFlask
+from app.views import bp as yangre_bp
 
-from app.yangre_app import app as application
-
-if __name__ == '__main__':
-    application.run()
+app = MyFlask(__name__)
+app.register_blueprint(yangre_bp, url_prefix='/yangre/v1')
