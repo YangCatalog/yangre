@@ -35,7 +35,7 @@ class MyFlask(Flask):
         if '/ping' in request.path:
             return
 
-        site_id = getattr(config, 'MATOMO_SITE_ID', 1)
+        site_id = getattr(config, 'MATOMO_SITE_ID')
         if not site_id:
             return
         client_ip = request.remote_addr
