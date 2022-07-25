@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9-bullseye
 ARG YANG_ID
 ARG YANG_GID
 ARG YANGLINT_VERSION
@@ -27,8 +27,8 @@ RUN rm -rf /var/lib/apt/lists/*
 
 COPY . $VIRTUAL_ENV
 COPY config.py-dist $VIRTUAL_ENV/config.py
-RUN pip install --upgrade pip
-RUN pip install gunicorn flask
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 # Setup w3cgrep
 RUN mkdir -p /home/w3cgrep

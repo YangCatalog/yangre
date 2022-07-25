@@ -1,0 +1,3 @@
+gunicorn==20.1.0
+flask==2.0.0
+piwikapi==0.3

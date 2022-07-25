@@ -17,8 +17,12 @@ __copyright__ = 'Copyright The IETF Trust 2022, All Rights Reserved'
 __license__ = 'Apache License, Version 2.0'
 __email__ = 'slavomir.mazur@pantheon.tech'
 
+from urllib.error import URLError
+
 import config  # pyright: ignore
-from flask import Flask
+from flask import Flask, request
+from piwikapi.tests.request import FakeRequest
+from piwikapi.tracking import PiwikTracker
 
 
 class MyFlask(Flask):
@@ -28,3 +32,49 @@ class MyFlask(Flask):
 
     def preprocess_request(self):
         super().preprocess_request()
+        if '/ping' in request.path:
+            return
+
+        site_id = getattr(config, 'MATOMO_SITE_ID')
+        if not site_id:
+            return
+        client_ip = request.remote_addr
+
+        headers_dict = get_headers_dict(request)
+        try:
+            record_analytic(headers_dict, client_ip)
+        except URLError:
+            pass
+
+
+def get_headers_dict(req) -> dict:
+    keys_to_serialize = [
+        'HTTP_USER_AGENT',
+        'REMOTE_ADDR',
+        'HTTP_REFERER',
+        'HTTP_ACCEPT_LANGUAGE',
+        'SERVER_NAME',
+        'PATH_INFO',
+        'QUERY_STRING',
+    ]
+    data = {
+        'HTTPS': req.is_secure
+    }
+    for key in keys_to_serialize:
+        if key in req.headers.environ:
+            data[key] = req.headers.environ[key]
+    return data
+
+
+def record_analytic(headers: dict, client_ip: str) -> None:
+    """ Send analytics data to Piwik/Matomo """
+    # Use "FakeRequest" because we had to serialize the real request
+    fake_request = FakeRequest(headers)
+
+    piwik_tracker = PiwikTracker(config.MATOMO_SITE_ID, fake_request)
+    piwik_tracker.set_api_url(config.MATOMO_API_URL)
+    if config.MATOMO_TOKEN_AUTH:
+        piwik_tracker.set_token_auth(config.MATOMO_TOKEN_AUTH)
+        piwik_tracker.set_ip(client_ip)
+    visited_url = fake_request.META['PATH_INFO'][:1000]
+    piwik_tracker.do_track_page_view(visited_url)
