@@ -44,7 +44,7 @@ class MyFlask(Flask):
         try:
             record_analytic(headers_dict, client_ip)
         except URLError:
-            pass
+            print('Unable to record API analytic')
 
 
 def get_headers_dict(req) -> dict:
@@ -77,4 +77,5 @@ def record_analytic(headers: dict, client_ip: str) -> None:
         piwik_tracker.set_token_auth(config.MATOMO_TOKEN_AUTH)
         piwik_tracker.set_ip(client_ip)
     visited_url = fake_request.META['PATH_INFO'][:1000]
-    piwik_tracker.do_track_page_view(visited_url)
+    piwik_tracker.do_track_page_view('API yangre {}'.format(visited_url))
+    print('Tracked API access to: {}'.format(visited_url))
