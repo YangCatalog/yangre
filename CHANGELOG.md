@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2022-MM-DD
 
+* ##### v5.6.0 - 2022-09-30
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v5.5.0 - 2022-08-16
 
   * Tracking API access using Matomo [deployment #151](https://github.com/YangCatalog/deployment/issues/151)
