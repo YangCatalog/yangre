@@ -2,6 +2,10 @@
 
 * ##### vm.m.p - 2022-MM-DD
 
+* ##### v5.6.1 - 2022-10-10
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v5.6.0 - 2022-09-30
 
   * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
