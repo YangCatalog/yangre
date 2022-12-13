@@ -1,4 +1,3 @@
-
 bind = 'unix:/var/run/yang/yangre.sock'
 
 workers = 2

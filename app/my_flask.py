@@ -57,9 +57,7 @@ def get_headers_dict(req) -> dict:
         'PATH_INFO',
         'QUERY_STRING',
     ]
-    data = {
-        'HTTPS': req.is_secure
-    }
+    data = {'HTTPS': req.is_secure}
     for key in keys_to_serialize:
         if key in req.headers.environ:
             data[key] = req.headers.environ[key]
@@ -67,15 +65,14 @@ def get_headers_dict(req) -> dict:
 
 
 def record_analytic(headers: dict, client_ip: str) -> None:
-    """ Send analytics data to Piwik/Matomo """
+    """Send analytics data to Piwik/Matomo"""
     # Use "FakeRequest" because we had to serialize the real request
     fake_request = FakeRequest(headers)
-
     piwik_tracker = PiwikTracker(config.MATOMO_SITE_ID, fake_request)
     piwik_tracker.set_api_url(config.MATOMO_API_URL)
     if config.MATOMO_TOKEN_AUTH:
         piwik_tracker.set_token_auth(config.MATOMO_TOKEN_AUTH)
         piwik_tracker.set_ip(client_ip)
     visited_url = fake_request.META['PATH_INFO'][:1000]
-    piwik_tracker.do_track_page_view('API yangre {}'.format(visited_url))
-    print('Tracked API access to: {}'.format(visited_url))
+    piwik_tracker.do_track_page_view(f'API yangre {visited_url}')
+    print(f'Tracked API access to: {visited_url}')
