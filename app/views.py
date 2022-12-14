@@ -1,5 +1,5 @@
 # Author: Pieter Lewyllie, pilewyll@cisco.com
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 # Copyright The IETF Trust 2019, All Rights Reserved
 # Copyright (c) 2015-2018 Cisco and/or its affiliates.
@@ -35,20 +35,13 @@ def _run(args: list):
     # in python 3.6 this changes to encoding='utf8'
     if sys.version_info < (3, 5, 0):
         try:
-            output = subprocess.check_output(
-                args,
-                stderr=subprocess.STDOUT,
-                universal_newlines=True)
+            output = subprocess.check_output(args, stderr=subprocess.STDOUT, universal_newlines=True)
             result = 0
         except subprocess.CalledProcessError as err:
             result = err.returncode
             output = err.output
     else:
-        input_obj = subprocess.run(
-            args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True)
+        input_obj = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         result = input_obj.returncode
         output = input_obj.stdout
     return result, output
@@ -56,13 +49,13 @@ def _run(args: list):
 
 @bp.route('', methods=['GET'])
 def swagger():
-    """ Renders the SWAGGER API UI """
+    """Renders the SWAGGER API UI"""
     return render_template('swagger.html')
 
 
 @bp.route('/w3c', methods=['GET', 'POST'])
 def w3c():
-    """ JSON API to validate W3C input """
+    """JSON API to validate W3C input"""
     req_data = request.get_json()  # pyright: ignore
 
     # writing the test string to file, as required by w3cgrep
@@ -74,10 +67,7 @@ def w3c():
         os.fsync(testfile.fileno())
 
     result, output = _run([config.W3CGREP_PATH, str(req_data['pattern']), w3cinput_filename])
-    if not output:
-        w3c_input_result = 1
-    else:
-        w3c_input_result = 0
+    w3c_input_result = 1 if not output else 0
 
     if req_data['inverted'] == 'true':
         w3c_input_result = int(not w3c_input_result)
@@ -91,16 +81,15 @@ def w3c():
     except FileNotFoundError:
         print('Oops, file not found')
 
-    return make_response(jsonify({
-        'pattern_nb': req_data['pattern_nb'],
-        'w3cgrep_result': w3c_input_result,
-        'w3cgrep_output': output
-    }), 200)
+    return make_response(
+        jsonify({'pattern_nb': req_data['pattern_nb'], 'w3cgrep_result': w3c_input_result, 'w3cgrep_output': output}),
+        200,
+    )
 
 
 @bp.route('/yangre', methods=['POST'])
 def yangre():
-    """ JSON API to validate YANG input """
+    """JSON API to validate YANG input"""
     req_data = request.get_json()  # pyright: ignore
 
     # writing the test string to another file for yangre
@@ -123,11 +112,10 @@ def yangre():
     except FileNotFoundError:
         print('Oops, file not found')
 
-    return make_response(jsonify({
-        'pattern_nb': req_data['pattern_nb'],
-        'yangre_result': yangre_result,
-        'yangre_output': yangre_output
-    }), 200)
+    return make_response(
+        jsonify({'pattern_nb': req_data['pattern_nb'], 'yangre_result': yangre_result, 'yangre_output': yangre_output}),
+        200,
+    )
 
 
 @bp.route('/ping', methods=['GET'])
