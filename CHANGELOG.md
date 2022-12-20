@@ -1,6 +1,11 @@
 ## Yangre Release Notes
 
-* ##### vm.m.p - 2022-MM-DD
+* ##### vm.m.p - 2023-MM-DD
+
+* ##### v5.8.0 - 2022-12-20
+
+  * Python base image bumped to version 3.10 [deployment #172](https://github.com/YangCatalog/deployment/issues/172)
+  * Code reformatted according to the defined style guide [deployment #163](https://github.com/YangCatalog/deployment/issues/163)
 
 * ##### v5.7.0 - 2022-11-11
 
