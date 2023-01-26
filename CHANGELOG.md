@@ -1,6 +1,8 @@
 ## Yangre Release Notes
 
-* ##### vm.m.p - 2023-MM-DD
+* ##### v5.9.0 - 2023-01-26
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
 
 * ##### v5.8.0 - 2022-12-20
 
