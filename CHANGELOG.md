@@ -1,5 +1,9 @@
 ## Yangre Release Notes
 
+* ##### v5.10.1 - 2023-03-20
+
+  * No changes - released with other [deployment submodules](https://github.com/YangCatalog/deployment)
+
 * ##### v5.10.0 - 2023-03-07
 
   * flake8-black package updated
